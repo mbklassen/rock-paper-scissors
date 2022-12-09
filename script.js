@@ -1,41 +1,41 @@
-/*const buttons = Array.from(document.querySelectorAll('button'));
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            playerSelection = button.id.toString();
-            console.log(playerSelection);
-        });
-    });
+let playerScore = 0;
+let computerScore = 0;
 
-window.addEventListener('click', game);*/
+// Query all selectors with the class "choice", convert the nodelist into an array and store in choiceButtons
+const choiceButtons = Array.from(document.querySelectorAll('.choice'));
+const resultsPara = document.querySelector('.results');
+const scorePara = document.querySelector('.score');
 
-let playerSelection;
-
-const rockButton = document.querySelector('.rock');
-rockButton.addEventListener('click', e => {
-    playerSelection = e.target.classList.value;
-    console.log(playerSelection);
-    game(playerSelection);
+// Add a "click" event listener for each button
+choiceButtons.forEach(button => {
+    button.addEventListener('click', clickResponse);
 });
+
+// Play a round in response to user clicking a choice button
+function clickResponse(e) {
+    const playerSelection = e.target.id;
+    playRound(playerSelection);
+}
 
 function getComputerChoice() {
     // Stores a random integer from 1 to 3 inclusive in choice
-    let choice = Math.floor(Math.random() * 3) + 1;
+    const choice = Math.floor(Math.random() * 3) + 1;
 
     // Return "Rock", "Paper", or "Scissors" depending on whether choice is 1, 2, or 3, respectively
     switch (choice) {
         case 1:
-            return "Rock";
+            return "rock";
         case 2:
-            return "Paper";
+            return "paper";
         case 3:
-            return "Scissors";
+            return "scissors";
     }
 }
 
-function playRound(playerSelection, computerSelection) {
+function getResult(playerSelection, computerSelection) {
     // Convert strings to lowercase so they can be easily compared
-    let playerChoice = playerSelection.toLowerCase();
-    let computerChoice = computerSelection.toLowerCase();
+    const playerChoice = playerSelection.toLowerCase();
+    const computerChoice = computerSelection.toLowerCase();
 
     // Stores the result of the round
     let result;
@@ -84,17 +84,13 @@ function playRound(playerSelection, computerSelection) {
         result = "invalid player entry"
     }
 
-    console.log(result);
     return result;
 }
 
-function game(playerChoice) {
+function playRound(playerChoice) {
     
-    let playerScore = 0;
-    let computerScore = 0;
-    
-    let computerChoice = getComputerChoice();
-    let result = playRound(playerChoice, computerChoice);
+    const computerChoice = getComputerChoice();
+    const result = getResult(playerChoice, computerChoice);
     let resultText;
 
     // Print an alert message that depends on the result of the round and increment player or computer score accordingly
@@ -115,22 +111,24 @@ function game(playerChoice) {
             // If player enters something invalid, don't progress to the next round
     }
 
-    let round = 1;
-    // Stores text containing the round number
-    let roundText = ". \nRound: " + round;
     // Stores text containing the score
-    let scoreText = "\nScore: Player - " + playerScore + "  Computer - " + computerScore;
-    // Print an alert containing the result of the round, the round number, and the score
-    console.log(resultText + roundText + scoreText);
-
-    // Function returns a string declaring the outcome of the game after 5 rounds
-    if (playerScore > computerScore) {
-        return "You win the game! :)"
+    let scoreText = "Score: Player - " + playerScore + ", Computer - " + computerScore;
+    
+    if (computerScore === 5) {
+        resultsPara.textContent = "Computer wins this game";
+        choiceButtons.forEach(button => {
+            button.removeEventListener('click', clickResponse);
+        });
     }
-    else if (playerScore < computerScore) {
-        return "You lose the game! :("
+    else if (playerScore === 5) {
+        resultsPara.textContent = "You win this game";
+        choiceButtons.forEach(button => {
+            button.removeEventListener('click', clickResponse);
+        });
     }
     else {
-        return "It's a tie game."
+        resultsPara.textContent = resultText;
     }
+
+    scorePara.textContent = scoreText;
 }
